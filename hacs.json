@@ -1,0 +1,7 @@
+{
+  "name": "Google Photos",
+  "render_readme": true,
+  "domains": ["camera"],
+  "iot_class": "Cloud Polling"
+}
+

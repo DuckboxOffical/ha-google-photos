@@ -141,7 +141,7 @@ This integration uses the new Google Photos Picker API, which was introduced in 
 ## Support
 
 For issues, feature requests, or questions:
-- Open an issue on [GitHub](https://github.com/lincolnduck/ha-google-photos/issues)
+- Open an issue on [GitHub](https://github.com/DuckboxOffical/ha-google-photos/issues)
 
 ## License
 
