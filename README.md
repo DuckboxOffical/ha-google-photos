@@ -19,7 +19,7 @@ A custom Home Assistant integration that uses the new Google Photos Picker API t
 1. Open HACS in Home Assistant
 2. Go to "Integrations"
 3. Click the three dots menu and select "Custom repositories"
-4. Add this repository URL: `https://github.com/lincolnduck/ha-google-photos`
+4. Add this repository URL: `https://github.com/DuckboxOffical/ha-google-photos`
 5. Select "Integration" as the category
 6. Click "Add"
 7. Search for "Google Photos" and install it
