@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Photos Setup",
+        "description": "Enter your Google OAuth 2.0 credentials. You can obtain these from the Google Cloud Console.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client Secret"
+        }
+      },
+      "pick_implementation": {
+        "title": "Pick Authentication Method",
+        "description": "Please pick how you want to authenticate with Google Photos."
+      }
+    },
+    "error": {
+      "client_id_and_secret_required": "Client ID and Client Secret are required",
+      "auth_error": "Authentication failed. Please check your credentials.",
+      "unknown": "Unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "Google Photos is already configured",
+      "oauth_error": "OAuth error occurred"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Google Photos Options",
+        "description": "Configure your Google Photos slideshow settings.",
+        "data": {
+          "album_id": "Album ID (optional)",
+          "update_interval": "Update Interval (seconds)",
+          "slideshow_interval": "Slideshow Interval (seconds)"
+        }
+      }
+    }
+  }
+}
+
