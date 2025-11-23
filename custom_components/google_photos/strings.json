@@ -17,6 +17,8 @@
     "error": {
       "client_id_and_secret_required": "Client ID and Client Secret are required",
       "auth_error": "Authentication failed. Please check your credentials.",
+      "oauth_setup_failed": "Failed to set up OAuth. Please check your credentials.",
+      "oauth_flow_error": "OAuth flow error. Please check the logs for details.",
       "unknown": "Unexpected error occurred"
     },
     "abort": {

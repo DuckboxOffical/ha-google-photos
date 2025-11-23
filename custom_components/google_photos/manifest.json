@@ -4,11 +4,11 @@
   "codeowners": ["@lincolnduck"],
   "config_flow": true,
   "dependencies": ["http"],
-  "documentation": "https://github.com/lincolnduck/ha-google-photos",
+  "documentation": "https://github.com/DuckboxOffical/ha-google-photos",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/lincolnduck/ha-google-photos/issues",
-  "requirements": ["google-auth==2.23.4", "google-auth-oauthlib==1.1.0", "google-auth-httplib2==0.1.1", "aiohttp==3.9.1"],
+  "issue_tracker": "https://github.com/DuckboxOffical/ha-google-photos/issues",
+  "requirements": ["google-auth==2.23.4", "google-auth-oauthlib==1.1.0", "google-auth-httplib2==0.1.1"],
   "version": "1.0.0"
 }
 

@@ -11,7 +11,6 @@ from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_entry_oauth2_flow
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, OAUTH_AUTH_URI, OAUTH_TOKEN_URI, SCOPES
 
@@ -31,13 +30,15 @@ class GooglePhotosFlowHandler(
         """Return logger."""
         return _LOGGER
 
-    @property
-    def extra_authorize_data(self) -> dict[str, Any]:
-        """Extra data that needs to be appended to the authorize url."""
-        return {
-            "access_type": "offline",
-            "prompt": "consent",
-        }
+    async def async_step_pick_implementation(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle the implementation pick step."""
+        # If flow_impl is already set, proceed directly to auth
+        if hasattr(self, "flow_impl") and self.flow_impl:
+            return await self.async_step_auth()
+        # Otherwise, use the parent implementation
+        return await super().async_step_pick_implementation(user_input)
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -66,20 +67,56 @@ class GooglePhotosFlowHandler(
                 errors={"base": "client_id_and_secret_required"},
             )
 
-        self.flow_impl = GooglePhotosOAuth2Implementation(
-            self.hass,
-            DOMAIN,
-            user_input[CONF_CLIENT_ID],
-            user_input[CONF_CLIENT_SECRET],
-        )
+        # Store credentials temporarily for OAuth flow
+        self._client_id = user_input[CONF_CLIENT_ID]
+        self._client_secret = user_input[CONF_CLIENT_SECRET]
 
-        return await self.async_step_pick_implementation_choice()
+        # Create the OAuth2 implementation
+        try:
+            self.flow_impl = GooglePhotosOAuth2Implementation(
+                self.hass,
+                DOMAIN,
+                user_input[CONF_CLIENT_ID],
+                user_input[CONF_CLIENT_SECRET],
+            )
+        except Exception as err:
+            _LOGGER.error("Failed to create OAuth2 implementation: %s", err)
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_CLIENT_ID): str,
+                        vol.Required(CONF_CLIENT_SECRET): str,
+                    }
+                ),
+                errors={"base": "oauth_setup_failed"},
+            )
+
+        # Proceed to OAuth authorization step
+        try:
+            return await self.async_step_pick_implementation_choice()
+        except Exception as err:
+            _LOGGER.error("OAuth flow error: %s", err, exc_info=True)
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_CLIENT_ID): str,
+                        vol.Required(CONF_CLIENT_SECRET): str,
+                    }
+                ),
+                errors={"base": "oauth_flow_error"},
+            )
 
     async def async_oauth_create_entry(self, data: dict[str, Any]) -> FlowResult:
         """Create an entry for the flow."""
         # Store client_id and client_secret in the entry data
-        data[CONF_CLIENT_ID] = self.flow_impl.client_id
-        data[CONF_CLIENT_SECRET] = self.flow_impl.client_secret
+        if hasattr(self, '_client_id') and hasattr(self, '_client_secret'):
+            data[CONF_CLIENT_ID] = self._client_id
+            data[CONF_CLIENT_SECRET] = self._client_secret
+        elif self.flow_impl:
+            data[CONF_CLIENT_ID] = self.flow_impl.client_id
+            data[CONF_CLIENT_SECRET] = self.flow_impl.client_secret
 
         return self.async_create_entry(title="Google Photos", data=data)
 
@@ -136,7 +173,4 @@ class GooglePhotosOAuth2Implementation(
             "scope": " ".join(SCOPES),
         }
 
-    async def async_generate_authorize_url(self, flow_id: str) -> str:
-        """Generate a url for the user to authorize."""
-        return f"{self.authorize_url}?{self._generate_authorize_url_params(flow_id)}"
 
